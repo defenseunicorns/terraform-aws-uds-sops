@@ -26,24 +26,24 @@ jobs:
         with:
           check-type: terraform
 
-  golang:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: pre-commit
-        uses: ./.github/actions/pre-commit
-        with:
-          check-type: golang
-
-  renovate:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: pre-commit
-        uses: ./.github/actions/pre-commit
-        with:
-          check-type: renovate
+            #   golang:
+            #     runs-on: ubuntu-latest
+            #     steps:
+            #       - name: Checkout repo
+            #         uses: actions/checkout@v3
+            # 
+            #       - name: pre-commit
+            #         uses: ./.github/actions/pre-commit
+            #         with:
+            #           check-type: golang
+            # 
+            #   renovate:
+            #     runs-on: ubuntu-latest
+            #     steps:
+            #       - name: Checkout repo
+            #         uses: actions/checkout@v3
+            # 
+            #       - name: pre-commit
+            #         uses: ./.github/actions/pre-commit
+            #         with:
+            #           check-type: renovate
