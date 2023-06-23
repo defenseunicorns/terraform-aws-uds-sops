@@ -1,7 +1,20 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    // Tells Renovate to maintain one GitHub issue as the "dependency dashboard". See https://docs.renovatebot.com/key-concepts/dashboard
+    ":dependencyDashboard",
+    // Use semantic commit type fix for dependencies and chore for all others if semantic commits are in use. See https://docs.renovatebot.com/presets-default/#semanticprefixfixdepschoreothers
+    ":semanticPrefixFixDepsChoreOthers",
+    // Group all updates together. See https://docs.renovatebot.com/presets-group/#groupall
+    // Other less drastic groupings that may be of interest include: group:allNonMajor, group:recommended, group:monorepos
+    "group:all",
+    // Apply crowd-sourced package replacement rules. See https://docs.renovatebot.com/presets-replacements/#replacementsall
+    "replacements:all",
+    // Apply crowd-sourced workarounds for known problems with packages. See https://docs.renovatebot.com/presets-workarounds/#workaroundsall
+    "workarounds:all"
+  ],
+  schedule: [
+    "before 4am every weekday"
   ],
   "labels": [
     "renovate"
@@ -12,15 +25,14 @@
     "enabled": true
   },
   "regexManagers": [
-    // Build Harness version
+    // Custom regex manager for the .env file that follows the pattern documented here: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture
     {
-      "fileMatch": [
-        "^Makefile$"
-      ],
+      "fileMatch": ["^.env"],
       "matchStrings": [
-        "BUILD_HARNESS_REPO := (?<depName>\\S+)\\nBUILD_HARNESS_VERSION := (?<currentValue>\\S+)"
+        "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s.*?_VERSION=(?<currentValue>.*)\\s"
       ],
-      "datasourceTemplate": "docker"
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver-coerced{{/if}}",
+      "extractVersionTemplate": "^v?(?<version>.*)$"
     },
     // Custom regex manager for the .tool-versions file that follows the pattern documented here: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture
     {
@@ -30,6 +42,14 @@
       ],
       "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver-coerced{{/if}}",
       "extractVersionTemplate": "^v?(?<version>.*)$"
+    }
+  ],
+  packageRules: [
+    {
+      matchManagers: ["terraform"],
+      matchDepTypes: ["module"],
+      matchDatasources: ["github-tags", "git-tags"],
+      versioning: "loose"
     }
   ]
 }
